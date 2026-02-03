@@ -1,137 +1,51 @@
-// NOTE: Do NOT add setup() or draw() in this file
-// setup() and draw() live in main.js
-// This file only defines:
-// 1) drawStart() → what the start/menu screen looks like
-// 2) input handlers → what happens on click / key press on this screen
-// 3) a helper function to draw menu buttons
-
-// ------------------------------------------------------------
-// Start screen visuals
-// ------------------------------------------------------------
-// drawStart() is called from main.js only when:
-// currentScreen === "start"
 function drawStart() {
-  // Background colour for the start screen
-  background(180, 225, 220); // soft teal background
+  background(10, 10, 25);
 
-  // ---- Title text ----
-  fill(30, 50, 60);
-  textSize(46);
-  textAlign(CENTER, CENTER);
-  text("Win or Lose", width / 2, 180);
+  drawCity();
+  drawMoon();
+  drawTrashWithFlowers();
 
-  // ---- Buttons (data only) ----
-  // These objects store the position/size/label for each button.
-  // Using objects makes it easy to pass them into drawButton()
-  // and also reuse the same information for hover checks.
-  const startBtn = {
-    x: width / 2,
-    y: 320,
-    w: 240,
-    h: 80,
-    label: "START",
-  };
+  fill(255);
+  textSize(42);
+  text("UNREQUITED", width / 2, 140);
 
-  const instrBtn = {
-    x: width / 2,
-    y: 430,
-    w: 240,
-    h: 80,
-    label: "INSTRUCTIONS",
-  };
+  textSize(18);
+  text("Some love is found in unexpected places.", width / 2, 190);
 
-  // Draw both buttons
-  drawButton(startBtn);
-  drawButton(instrBtn);
-
-  // ---- Cursor feedback ----
-  // If the mouse is over either button, show a hand cursor
-  // so the player knows it is clickable.
-  const over = isHover(startBtn) || isHover(instrBtn);
-  cursor(over ? HAND : ARROW);
+  drawButton(width / 2, 380, 220, 60, "Begin");
 }
 
-// ------------------------------------------------------------
-// Mouse input for the start screen
-// ------------------------------------------------------------
-// Called from main.js only when currentScreen === "start"
 function startMousePressed() {
-  // For input checks, we only need x,y,w,h (label is optional)
-  const startBtn = { x: width / 2, y: 320, w: 240, h: 80 };
-  const instrBtn = { x: width / 2, y: 430, w: 240, h: 80 };
-
-  // If START is clicked, go to the game screen
-  if (isHover(startBtn)) {
-    currentScreen = "game";
-  }
-  // If INSTRUCTIONS is clicked, go to the instructions screen
-  else if (isHover(instrBtn)) {
-    currentScreen = "instr";
-  }
+  const btn = { x: width / 2, y: 380, w: 220, h: 60 };
+  if (isOver(btn)) currentScreen = "choice";
 }
 
-// ------------------------------------------------------------
-// Keyboard input for the start screen
-// ------------------------------------------------------------
-// Provides keyboard shortcuts:
-// - ENTER starts the game
-// - I opens instructions
-function startKeyPressed() {
-  if (keyCode === ENTER) {
-    currentScreen = "game";
-  }
+/* ---------- VISUAL HELPERS ---------- */
 
-  if (key === "i" || key === "I") {
-    currentScreen = "instr";
-  }
-}
-
-// ------------------------------------------------------------
-// Helper: drawButton()
-// ------------------------------------------------------------
-// This function draws a button and changes its appearance on hover.
-// It does NOT decide what happens when you click the button.
-// That logic lives in startMousePressed() above.
-//
-// Keeping drawing separate from input/logic makes code easier to read.
-function drawButton({ x, y, w, h, label }) {
-  rectMode(CENTER);
-
-  // Check if the mouse is over the button rectangle
-  const hover = isHover({ x, y, w, h });
-
+function drawMoon() {
+  fill(240);
   noStroke();
+  ellipse(650, 100, 120, 120);
+}
 
-  // ---- Visual feedback (hover vs not hover) ----
-  // This is a common UI idea:
-  // - normal state is calmer
-  // - hover state is brighter + more “active”
-  //
-  // We also add a shadow using drawingContext (p5 lets you access the
-  // underlying canvas context for effects like shadows).
-  if (hover) {
-    fill(255, 200, 150, 220); // warm coral on hover
+function drawCity() {
+  fill(30);
+  rect(0, 300, width, 200);
 
-    // Shadow settings (only when hovered)
-    drawingContext.shadowBlur = 20;
-    drawingContext.shadowColor = color(255, 180, 120);
-  } else {
-    fill(255, 240, 210, 210); // soft cream base
-
-    // Softer shadow when not hovered
-    drawingContext.shadowBlur = 8;
-    drawingContext.shadowColor = color(220, 220, 220);
+  fill(20);
+  for (let i = 0; i < width; i += 80) {
+    rect(i, 250, 60, random(80, 140));
   }
+}
 
-  // Draw the rounded rectangle button
-  rect(x, y, w, h, 14);
+function drawTrashWithFlowers() {
+  // trash can
+  fill(60);
+  rect(120, 320, 50, 70);
 
-  // Important: reset shadow so it does not affect other drawings
-  drawingContext.shadowBlur = 0;
-
-  // Draw the label text on top of the button
-  fill(40, 60, 70);
-  textSize(28);
-  textAlign(CENTER, CENTER);
-  text(label, x, y);
+  // flowers
+  fill(120, 200, 140);
+  ellipse(110, 285, 12);
+  ellipse(130, 280, 12);
+  ellipse(120, 270, 12);
 }

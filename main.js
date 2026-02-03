@@ -1,124 +1,133 @@
-// ------------------------------------------------------------
-// main.js = the “router” (traffic controller) for the whole game
-// ------------------------------------------------------------
-//
-// Idea: this project has multiple screens (start, instructions, game, win, lose).
-// Instead of putting everything in one giant file, each screen lives in its own
-// file and defines two main things:
-//   1) drawX()         → how that screen looks
-//   2) XMousePressed() / XKeyPressed() → how that screen handles input
-//
-// This main.js file does 3 important jobs:
-//   A) stores the current screen in a single shared variable
-//   B) calls the correct draw function each frame
-//   C) sends mouse/keyboard input to the correct screen handler
+let currentScreen = "start";
 
-// ------------------------------
-// Global game state
-// ------------------------------
-// This variable is shared across all files because all files run in the same
-// global JavaScript scope when loaded in index.html.
-//
-// We store the “name” of the current screen as a string.
-// Only one screen should be active at a time.
-let currentScreen = "start"; // "start" | "instr" | "game" | "win" | "lose"
+// ---------- BUTTONS ----------
+let startBtn = { x: 400, y: 300, w: 220, h: 60 };
+let partyBtn = { x: 250, y: 300, w: 220, h: 60 };
+let natureBtn = { x: 550, y: 300, w: 220, h: 60 };
+let continueBtn = { x: 400, y: 350, w: 220, h: 60 };
+let restartBtn = { x: 400, y: 380, w: 220, h: 60 };
 
-// ------------------------------
-// setup() runs ONCE at the beginning
-// ------------------------------
-// This is where you usually set canvas size and initial settings.
+// ---------- SETUP ----------
 function setup() {
-  createCanvas(800, 800);
-
-  // Sets a default font for all text() calls
-  // (This can be changed later per-screen if you want.)
-  textFont("sans-serif");
+  createCanvas(800, 500);
+  textAlign(CENTER, CENTER);
+  rectMode(CENTER);
 }
 
-// ------------------------------
-// draw() runs every frame (many times per second)
-// ------------------------------
-// This is the core “router” for visuals.
-// Depending on currentScreen, we call the correct draw function.
+// ---------- DRAW ----------
 function draw() {
-  // Each screen file defines its own draw function:
-  //   start.js         → drawStart()
-  //   instructions.js  → drawInstr()
-  //   game.js          → drawGame()
-  //   win.js           → drawWin()
-  //   lose.js          → drawLose()
+  background(20);
 
   if (currentScreen === "start") drawStart();
-  else if (currentScreen === "instr") drawInstr();
-  else if (currentScreen === "game") drawGame();
-  else if (currentScreen === "win") drawWin();
-  else if (currentScreen === "lose") drawLose();
-
-  // (Optional teaching note)
-  // This “if/else chain” is a very common early approach.
-  // Later in the course you might replace it with:
-  // - a switch statement, or
-  // - an object/map of screens
+  else if (currentScreen === "choice") drawChoice();
+  else if (currentScreen === "partyAsk") drawPartyAsk();
+  else if (currentScreen === "natureAsk") drawNatureAsk();
+  else if (currentScreen === "partyEnd") drawPartyEnd();
+  else if (currentScreen === "natureEnd") drawNatureEnd();
 }
 
-// ------------------------------
-// mousePressed() runs once each time the mouse is clicked
-// ------------------------------
-// This routes mouse input to the correct screen handler.
+// ---------- MOUSE ----------
 function mousePressed() {
-  // Each screen *may* define a mouse handler:
-  // start.js         → startMousePressed()
-  // instructions.js  → instrMousePressed()
-  // game.js          → gameMousePressed()
-  // win.js           → winMousePressed()
-  // lose.js          → loseMousePressed()
-
   if (currentScreen === "start") startMousePressed();
-  else if (currentScreen === "instr") instrMousePressed();
-  else if (currentScreen === "game") gameMousePressed();
-  // The ?.() means “call this function only if it exists”
-  // This prevents errors if a screen doesn’t implement a handler.
-  else if (currentScreen === "win") winMousePressed?.();
-  else if (currentScreen === "lose") loseMousePressed?.();
+  else if (currentScreen === "choice") choiceMousePressed();
+  else if (currentScreen === "partyAsk") partyAskMousePressed();
+  else if (currentScreen === "natureAsk") natureAskMousePressed();
+  else if (currentScreen === "partyEnd") endMousePressed();
+  else if (currentScreen === "natureEnd") endMousePressed();
 }
 
-// ------------------------------
-// keyPressed() runs once each time a key is pressed
-// ------------------------------
-// This routes keyboard input to the correct screen handler.
-function keyPressed() {
-  // Each screen *may* define a key handler:
-  // start.js         → startKeyPressed()
-  // instructions.js  → instrKeyPressed()
-  // game.js          → gameKeyPressed()
-  // win.js           → winKeyPressed()
-  // lose.js          → loseKeyPressed()
-
-  if (currentScreen === "start") startKeyPressed();
-  else if (currentScreen === "instr") instrKeyPressed();
-  else if (currentScreen === "game") gameKeyPressed?.();
-  else if (currentScreen === "win") winKeyPressed?.();
-  else if (currentScreen === "lose") loseKeyPressed?.();
+// ---------- SCREENS ----------
+function drawStart() {
+  fill(255);
+  textSize(36);
+  text("Welcome", width / 2, 180);
+  drawButton(startBtn.x, startBtn.y, startBtn.w, startBtn.h, "Start");
 }
 
-// ------------------------------------------------------------
-// Shared helper function: isHover()
-// ------------------------------------------------------------
-//
-// Many screens have buttons.
-// This helper checks whether the mouse is inside a rectangle.
-//
-// Important: our buttons are drawn using rectMode(CENTER),
-// meaning x,y is the CENTRE of the rectangle.
-// So we check mouseX and mouseY against half-width/half-height bounds.
-//
-// Input:  an object with { x, y, w, h }
-// Output: true if mouse is over the rectangle, otherwise false
-function isHover({ x, y, w, h }) {
+function drawChoice() {
+  fill(255);
+  textSize(28);
+  text("Choose your path", width / 2, 160);
+  drawButton(partyBtn.x, partyBtn.y, partyBtn.w, partyBtn.h, "Party");
+  drawButton(natureBtn.x, natureBtn.y, natureBtn.w, natureBtn.h, "Nature");
+}
+
+function drawPartyAsk() {
+  fill(255);
+  textSize(26);
+  text("You go to a party.\nDo you stay late?", width / 2, 200);
+  drawButton(
+    continueBtn.x,
+    continueBtn.y,
+    continueBtn.w,
+    continueBtn.h,
+    "Continue",
+  );
+}
+
+function drawNatureAsk() {
+  fill(255);
+  textSize(26);
+  text("You go into nature.\nDo you keep walking?", width / 2, 200);
+  drawButton(
+    continueBtn.x,
+    continueBtn.y,
+    continueBtn.w,
+    continueBtn.h,
+    "Continue",
+  );
+}
+
+function drawPartyEnd() {
+  fill(255);
+  textSize(26);
+  text("You had a wild night.\nThe end.", width / 2, 220);
+  drawButton(restartBtn.x, restartBtn.y, restartBtn.w, restartBtn.h, "Restart");
+}
+
+function drawNatureEnd() {
+  fill(255);
+  textSize(26);
+  text("You found peace in nature.\nThe end.", width / 2, 220);
+  drawButton(restartBtn.x, restartBtn.y, restartBtn.w, restartBtn.h, "Restart");
+}
+
+// ---------- CLICK HANDLERS ----------
+function startMousePressed() {
+  if (isOver(startBtn)) currentScreen = "choice";
+}
+
+function choiceMousePressed() {
+  if (isOver(partyBtn)) currentScreen = "partyAsk";
+  else if (isOver(natureBtn)) currentScreen = "natureAsk";
+}
+
+function partyAskMousePressed() {
+  if (isOver(continueBtn)) currentScreen = "partyEnd";
+}
+
+function natureAskMousePressed() {
+  if (isOver(continueBtn)) currentScreen = "natureEnd";
+}
+
+function endMousePressed() {
+  if (isOver(restartBtn)) currentScreen = "start";
+}
+
+// ---------- UI HELPERS ----------
+function drawButton(x, y, w, h, label) {
+  fill(60);
+  rect(x, y, w, h, 12);
+  fill(255);
+  textSize(18);
+  text(label, x, y);
+}
+
+function isOver(btn) {
   return (
-    mouseX > x - w / 2 && // mouse is right of left edge
-    mouseX < x + w / 2 && // mouse is left of right edge
-    mouseY > y - h / 2 && // mouse is below top edge
-    mouseY < y + h / 2 // mouse is above bottom edge
+    mouseX > btn.x - btn.w / 2 &&
+    mouseX < btn.x + btn.w / 2 &&
+    mouseY > btn.y - btn.h / 2 &&
+    mouseY < btn.y + btn.h / 2
   );
 }
